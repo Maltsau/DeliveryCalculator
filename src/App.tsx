@@ -19,9 +19,29 @@ const TableStyled = styled.table`
   border-collapse: collapse;
 `;
 
-const TableHead = styled.thead``;
+const TableHead = styled.thead`
+  & th {
+    color: black;
+  }
+`;
 
-const TableLine = styled.tr``;
+const TableLine = styled.tr`
+  & :nth-child(1) {
+    min-width: 70px;
+  }
+  & td:nth-child(7) {
+    color: green;
+  }
+  & td:nth-child(8) {
+    color: yellowgreen;
+  }
+`;
+
+const TableHeadCell = styled.th`
+  border: 1px solid black;
+  margin: 0;
+  padding: 10px;
+`;
 
 const TableCell = styled.td`
   border: 1px solid black;
@@ -76,8 +96,6 @@ function App() {
     else return 0;
   };
 
-  // const handleNumericInput = (position?: number, value: string, callBack: ())
-
   const totalNettoPrice = lines.reduce(
     (accumulator, currentValue) =>
       accumulator + currentValue.quantity * currentValue.price,
@@ -101,15 +119,15 @@ function App() {
         <TableStyled>
           <TableHead>
             <TableLine>
-              <TableCell>№ п/п</TableCell>
-              <TableCell>Описание</TableCell>
-              <TableCell>Цена</TableCell>
-              <TableCell>Количество</TableCell>
-              <TableCell>Стоимость</TableCell>
-              <TableCell>Наценка на позицию</TableCell>
-              <TableCell>Наценка на единицу</TableCell>
-              <TableCell>Новая цена</TableCell>
-              <TableCell>Действие</TableCell>
+              <TableHeadCell>№ п/п</TableHeadCell>
+              <TableHeadCell>Описание</TableHeadCell>
+              <TableHeadCell>Цена</TableHeadCell>
+              <TableHeadCell>Количество</TableHeadCell>
+              <TableHeadCell>Стоимость</TableHeadCell>
+              <TableHeadCell>Наценка на позицию</TableHeadCell>
+              <TableHeadCell>Наценка на единицу</TableHeadCell>
+              <TableHeadCell>Новая цена</TableHeadCell>
+              <TableHeadCell>Действие</TableHeadCell>
             </TableLine>
           </TableHead>
           <tbody>
@@ -183,7 +201,7 @@ function App() {
               </TableLine>
             ))}
             <TableLine>
-              <TableCell>
+              <TableCell colSpan={9}>
                 <InlineButton
                   $background={plusIcon}
                   onClick={() => {
