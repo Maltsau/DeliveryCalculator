@@ -106,6 +106,12 @@ function App() {
     (line) => (line.price * line.quantity * delivery) / totalNettoPrice
   );
 
+  const newPrices = lines.map(
+    (line, i) => line.price + deliveryPerPosition[i] / line.quantity
+  );
+
+  const newCosts = lines.map((line, i) => newPrices[i] * line.quantity);
+
   return (
     <>
       <Header>
@@ -120,13 +126,14 @@ function App() {
           <TableHead>
             <TableLine>
               <TableHeadCell>№ п/п</TableHeadCell>
-              <TableHeadCell>Описание</TableHeadCell>
-              <TableHeadCell>Цена</TableHeadCell>
+              <TableHeadCell>Описание (наименование)</TableHeadCell>
+              <TableHeadCell>Цена без НДС, руб.</TableHeadCell>
               <TableHeadCell>Количество</TableHeadCell>
-              <TableHeadCell>Стоимость</TableHeadCell>
-              <TableHeadCell>Наценка на позицию</TableHeadCell>
-              <TableHeadCell>Наценка на единицу</TableHeadCell>
-              <TableHeadCell>Новая цена</TableHeadCell>
+              <TableHeadCell>Стоимость без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Наценка на позицию без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Наценка на единицу без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Новая цена без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Новая стоимость без НДС, руб.</TableHeadCell>
               <TableHeadCell>Действие</TableHeadCell>
             </TableLine>
           </TableHead>
@@ -167,7 +174,9 @@ function App() {
                   />
                 </TableCell>
                 <TableCell>
-                  <span>{validateCalculated(line.price * line.quantity)}</span>
+                  <span>
+                    {validateCalculated(line.price * line.quantity).toFixed(2)}
+                  </span>
                 </TableCell>
                 <TableCell>
                   <span>
@@ -177,18 +186,20 @@ function App() {
                 </TableCell>
                 <TableCell>
                   <span>
-                    {'+' +
-                      validateCalculated(
-                        deliveryPerPosition[i] / line.quantity
-                      ).toFixed(2)}
+                    {line.price}
+                    <sup>
+                      {'+' +
+                        validateCalculated(
+                          deliveryPerPosition[i] / line.quantity
+                        ).toFixed(2)}
+                    </sup>
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span>
-                    {validateCalculated(
-                      line.price + deliveryPerPosition[i] / line.quantity
-                    ).toFixed(2)}
-                  </span>
+                  <span>{validateCalculated(newPrices[i]).toFixed(2)}</span>
+                </TableCell>
+                <TableCell>
+                  {validateCalculated(newCosts[i]).toFixed(2)}
                 </TableCell>
                 <TableCell>
                   <InlineButton
@@ -201,7 +212,7 @@ function App() {
               </TableLine>
             ))}
             <TableLine>
-              <TableCell colSpan={9}>
+              <TableCell colSpan={10}>
                 <InlineButton
                   $background={plusIcon}
                   onClick={() => {
@@ -225,6 +236,12 @@ function App() {
               </TableCell>
               <TableCell></TableCell>
               <TableCell></TableCell>
+              <TableCell>
+                {newCosts.reduce(
+                  (accumulator, currentValue) => accumulator + currentValue,
+                  0
+                )}
+              </TableCell>
               <TableCell></TableCell>
             </TableLine>
           </tbody>
