@@ -237,10 +237,12 @@ function App() {
               <TableCell></TableCell>
               <TableCell></TableCell>
               <TableCell>
-                {newCosts.reduce(
-                  (accumulator, currentValue) => accumulator + currentValue,
-                  0
-                )}
+                {validateCalculated(
+                  newCosts.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0
+                  )
+                ).toFixed(2)}
               </TableCell>
               <TableCell></TableCell>
             </TableLine>
