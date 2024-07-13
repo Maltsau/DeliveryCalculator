@@ -1,6 +1,15 @@
 import styled from 'styled-components';
 
+import plusIcon from './assets/plus.svg';
+import minusIcon from './assets/minus.svg';
+
 import { useStore } from './store';
+
+const Header = styled.header`
+  padding: 10px 0;
+  display: flex;
+  gap: 10px;
+`;
 
 const TableStyled = styled.table`
   min-width: 100%;
@@ -10,14 +19,44 @@ const TableStyled = styled.table`
   border-collapse: collapse;
 `;
 
-const TableHead = styled.thead``;
+const TableHead = styled.thead`
+  & th {
+    color: black;
+  }
+`;
 
-const TableLine = styled.tr``;
+const TableLine = styled.tr`
+  & :nth-child(1) {
+    min-width: 70px;
+  }
+  & td:nth-child(7) {
+    color: green;
+  }
+  & td:nth-child(8) {
+    color: yellowgreen;
+  }
+`;
+
+const TableHeadCell = styled.th`
+  border: 1px solid black;
+  margin: 0;
+  padding: 10px;
+`;
 
 const TableCell = styled.td`
   border: 1px solid black;
   margin: 0;
   padding: 10px;
+`;
+
+const InlineButton = styled.div<{ $background: string }>`
+  margin: 0px auto;
+  background-image: url(${(props) => props.$background});
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 `;
 
 function App() {
@@ -57,8 +96,6 @@ function App() {
     else return 0;
   };
 
-  // const handleNumericInput = (position?: number, value: string, callBack: ())
-
   const totalNettoPrice = lines.reduce(
     (accumulator, currentValue) =>
       accumulator + currentValue.quantity * currentValue.price,
@@ -69,131 +106,149 @@ function App() {
     (line) => (line.price * line.quantity * delivery) / totalNettoPrice
   );
 
+  const newPrices = lines.map(
+    (line, i) => line.price + deliveryPerPosition[i] / line.quantity
+  );
+
+  const newCosts = lines.map((line, i) => newPrices[i] * line.quantity);
+
   return (
     <>
-      <span>{JSON.stringify(delivery)}</span>
-      <span>{JSON.stringify(deliveryPerPosition)}</span>
-      <div>
+      <Header>
+        <div>Введите стоимость Вашей доставки в это поле:</div>
         <input
           type="number"
-          step="any"
           onChange={(e) => handleDeliveryChange(e.target.value)}
         />
-      </div>
-      <TableStyled>
-        <TableHead>
-          <TableLine>
-            <TableCell>№ п/п</TableCell>
-            <TableCell>Описание</TableCell>
-            <TableCell>Цена</TableCell>
-            <TableCell>Количество</TableCell>
-            <TableCell>Стоимость</TableCell>
-            <TableCell>Наценка на позицию</TableCell>
-            <TableCell>Наценка на единицу</TableCell>
-            <TableCell>Новая цена</TableCell>
-            <TableCell>Действие</TableCell>
-          </TableLine>
-        </TableHead>
-        <tbody>
-          {lines.map((line, i) => (
-            <TableLine key={line.position + 'key'}>
-              <TableCell>{line.position}</TableCell>
-              <TableCell>
-                <input
-                  value={line.description}
-                  onChange={(e) => {
-                    changeDatum('description', line.position, e.target.value);
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <input
-                  type="number"
-                  step="any"
-                  value={line.price === 0 ? '' : line.price}
-                  onChange={(e) =>
-                    handlePriceChange(line.position, e.target.value)
-                  }
-                />
-              </TableCell>
-              <TableCell>
-                <input
-                  type="number"
-                  step="any"
-                  value={line.quantity === 0 ? '' : line.quantity}
-                  onChange={(e) => {
-                    changeDatum(
-                      'quantity',
-                      line.position,
-                      Number(e.target.value)
-                    );
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <span>{validateCalculated(line.price * line.quantity)}</span>
-              </TableCell>
-              <TableCell>
-                <span>
-                  {'+' + validateCalculated(deliveryPerPosition[i]).toFixed(2)}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span>
-                  {'+' +
-                    validateCalculated(
-                      deliveryPerPosition[i] / line.quantity
-                    ).toFixed(2)}
-                </span>
-              </TableCell>
-              <TableCell>
-                <span>
-                  {validateCalculated(
-                    line.price + deliveryPerPosition[i] / line.quantity
-                  ).toFixed(2)}
-                </span>
-              </TableCell>
-              <TableCell>
-                <button
+      </Header>
+      <main>
+        <TableStyled>
+          <TableHead>
+            <TableLine>
+              <TableHeadCell>№ п/п</TableHeadCell>
+              <TableHeadCell>Описание (наименование)</TableHeadCell>
+              <TableHeadCell>Цена без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Количество</TableHeadCell>
+              <TableHeadCell>Стоимость без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Наценка на позицию без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Наценка на единицу без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Новая цена без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Новая стоимость без НДС, руб.</TableHeadCell>
+              <TableHeadCell>Действие</TableHeadCell>
+            </TableLine>
+          </TableHead>
+          <tbody>
+            {lines.map((line, i) => (
+              <TableLine key={line.position + 'key'}>
+                <TableCell>{line.position}</TableCell>
+                <TableCell>
+                  <input
+                    value={line.description}
+                    onChange={(e) => {
+                      changeDatum('description', line.position, e.target.value);
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <input
+                    type="number"
+                    step="any"
+                    value={line.price === 0 ? '' : line.price}
+                    onChange={(e) =>
+                      handlePriceChange(line.position, e.target.value)
+                    }
+                  />
+                </TableCell>
+                <TableCell>
+                  <input
+                    type="number"
+                    step="any"
+                    value={line.quantity === 0 ? '' : line.quantity}
+                    onChange={(e) => {
+                      changeDatum(
+                        'quantity',
+                        line.position,
+                        Number(e.target.value)
+                      );
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <span>
+                    {validateCalculated(line.price * line.quantity).toFixed(2)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span>
+                    {'+' +
+                      validateCalculated(deliveryPerPosition[i]).toFixed(2)}
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span>
+                    {line.price}
+                    <sup>
+                      {'+' +
+                        validateCalculated(
+                          deliveryPerPosition[i] / line.quantity
+                        ).toFixed(2)}
+                    </sup>
+                  </span>
+                </TableCell>
+                <TableCell>
+                  <span>{validateCalculated(newPrices[i]).toFixed(2)}</span>
+                </TableCell>
+                <TableCell>
+                  {validateCalculated(newCosts[i]).toFixed(2)}
+                </TableCell>
+                <TableCell>
+                  <InlineButton
+                    $background={minusIcon}
+                    onClick={() => {
+                      removeLine(line.position);
+                    }}
+                  ></InlineButton>
+                </TableCell>
+              </TableLine>
+            ))}
+            <TableLine>
+              <TableCell colSpan={10}>
+                <InlineButton
+                  $background={plusIcon}
                   onClick={() => {
-                    removeLine(line.position);
+                    addLine();
                   }}
-                >
-                  Remove
-                </button>
+                ></InlineButton>
               </TableCell>
             </TableLine>
-          ))}
-          <TableLine>
-            <TableCell>
-              <button
-                onClick={() => {
-                  addLine();
-                }}
-              >
-                Add Line
-              </button>
-            </TableCell>
-          </TableLine>
-          <TableLine>
-            <TableCell colSpan={4}>ИТОГО:</TableCell>
-            <TableCell>
-              {validateCalculated(totalNettoPrice).toFixed(2)}
-            </TableCell>
-            <TableCell>
-              {validateCalculated(
-                deliveryPerPosition.reduce(
-                  (accumulator, currentValue) => accumulator + currentValue,
-                  0
-                )
-              ).toFixed(2)}
-            </TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-          </TableLine>
-        </tbody>
-      </TableStyled>
+            <TableLine>
+              <TableCell colSpan={4}>ИТОГО:</TableCell>
+              <TableCell>
+                {validateCalculated(totalNettoPrice).toFixed(2)}
+              </TableCell>
+              <TableCell>
+                {validateCalculated(
+                  deliveryPerPosition.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0
+                  )
+                ).toFixed(2)}
+              </TableCell>
+              <TableCell></TableCell>
+              <TableCell></TableCell>
+              <TableCell>
+                {validateCalculated(
+                  newCosts.reduce(
+                    (accumulator, currentValue) => accumulator + currentValue,
+                    0
+                  )
+                ).toFixed(2)}
+              </TableCell>
+              <TableCell></TableCell>
+            </TableLine>
+          </tbody>
+        </TableStyled>
+      </main>
     </>
   );
 }
