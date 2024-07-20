@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import plusIcon from './assets/icons/plus.svg';
-import minusIcon from './assets/icons/minus.svg';
+import plusIcon from '/plus.svg';
+import minusIcon from '/minus.svg';
 
 import { useStore } from './store';
 
@@ -154,7 +154,7 @@ function App() {
                   <input
                     type="number"
                     step="any"
-                    value={line.price === 0 ? '' : line.price}
+                    value={line.price}
                     onChange={(e) =>
                       handlePriceChange(line.position, e.target.value)
                     }
@@ -164,7 +164,7 @@ function App() {
                   <input
                     type="number"
                     step="any"
-                    value={line.quantity === 0 ? '' : line.quantity}
+                    value={line.quantity}
                     onChange={(e) => {
                       changeDatum(
                         'quantity',
