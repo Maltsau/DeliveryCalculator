@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import plusIcon from './assets/plus.svg';
-import minusIcon from './assets/minus.svg';
+import plusIcon from '/plus.svg';
+import minusIcon from '/minus.svg';
 
 import { useStore } from './store';
 
@@ -70,30 +70,27 @@ function App() {
   const handlePriceChange = (position: number, value: string) => {
     const formattedValue = value.replace(/[^0-9.]/g, '');
     const [integerPart, decimalPart] = formattedValue.split('.');
-    if (decimalPart && decimalPart.length > 2) {
-      changeDatum(
-        'price',
-        position,
-        parseFloat(`${integerPart}.${decimalPart.slice(0, 2)}`)
-      );
-    } else {
-      changeDatum('price', position, parseFloat(formattedValue));
-    }
+    const finalValue =
+      decimalPart && decimalPart.length > 2
+        ? parseFloat(`${integerPart}.${decimalPart.slice(0, 2)}`)
+        : parseFloat(formattedValue);
+
+    changeDatum('price', position, isNaN(finalValue) ? 0 : finalValue);
   };
 
   const handleDeliveryChange = (value: string) => {
     const formattedValue = value.replace(/[^0-9.]/g, '');
     const [integerPart, decimalPart] = formattedValue.split('.');
-    if (decimalPart && decimalPart.length > 2) {
-      setDelivery(parseFloat(`${integerPart}.${decimalPart.slice(0, 2)}`));
-    } else {
-      setDelivery(parseFloat(formattedValue));
-    }
+    const finalValue =
+      decimalPart && decimalPart.length > 2
+        ? parseFloat(`${integerPart}.${decimalPart.slice(0, 2)}`)
+        : parseFloat(formattedValue);
+
+    setDelivery(isNaN(finalValue) ? 0 : finalValue);
   };
 
   const validateCalculated = (value: number) => {
-    if (value && !isNaN(value)) return value;
-    else return 0;
+    return value && !isNaN(value) ? value.toFixed(2) : '0.00';
   };
 
   const totalNettoPrice = lines.reduce(
@@ -102,9 +99,12 @@ function App() {
     0
   );
 
-  const deliveryPerPosition = lines.map(
-    (line) => (line.price * line.quantity * delivery) / totalNettoPrice
-  );
+  const deliveryPerPosition =
+    totalNettoPrice > 0
+      ? lines.map(
+          (line) => (line.price * line.quantity * delivery) / totalNettoPrice
+        )
+      : lines.map(() => 0);
 
   const newPrices = lines.map(
     (line, i) => line.price + deliveryPerPosition[i] / line.quantity
@@ -118,6 +118,7 @@ function App() {
         <div>Введите стоимость Вашей доставки в это поле:</div>
         <input
           type="number"
+          step="any"
           onChange={(e) => handleDeliveryChange(e.target.value)}
         />
       </Header>
@@ -153,7 +154,7 @@ function App() {
                   <input
                     type="number"
                     step="any"
-                    value={line.price === 0 ? '' : line.price}
+                    value={line.price}
                     onChange={(e) =>
                       handlePriceChange(line.position, e.target.value)
                     }
@@ -163,7 +164,7 @@ function App() {
                   <input
                     type="number"
                     step="any"
-                    value={line.quantity === 0 ? '' : line.quantity}
+                    value={line.quantity}
                     onChange={(e) => {
                       changeDatum(
                         'quantity',
@@ -174,14 +175,11 @@ function App() {
                   />
                 </TableCell>
                 <TableCell>
-                  <span>
-                    {validateCalculated(line.price * line.quantity).toFixed(2)}
-                  </span>
+                  <span>{validateCalculated(line.price * line.quantity)}</span>
                 </TableCell>
                 <TableCell>
                   <span>
-                    {'+' +
-                      validateCalculated(deliveryPerPosition[i]).toFixed(2)}
+                    {'+' + validateCalculated(deliveryPerPosition[i])}
                   </span>
                 </TableCell>
                 <TableCell>
@@ -191,16 +189,14 @@ function App() {
                       {'+' +
                         validateCalculated(
                           deliveryPerPosition[i] / line.quantity
-                        ).toFixed(2)}
+                        )}
                     </sup>
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span>{validateCalculated(newPrices[i]).toFixed(2)}</span>
+                  <span>{validateCalculated(newPrices[i])}</span>
                 </TableCell>
-                <TableCell>
-                  {validateCalculated(newCosts[i]).toFixed(2)}
-                </TableCell>
+                <TableCell>{validateCalculated(newCosts[i])}</TableCell>
                 <TableCell>
                   <InlineButton
                     $background={minusIcon}
@@ -223,16 +219,14 @@ function App() {
             </TableLine>
             <TableLine>
               <TableCell colSpan={4}>ИТОГО:</TableCell>
-              <TableCell>
-                {validateCalculated(totalNettoPrice).toFixed(2)}
-              </TableCell>
+              <TableCell>{validateCalculated(totalNettoPrice)}</TableCell>
               <TableCell>
                 {validateCalculated(
                   deliveryPerPosition.reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
                     0
                   )
-                ).toFixed(2)}
+                )}
               </TableCell>
               <TableCell></TableCell>
               <TableCell></TableCell>
@@ -242,7 +236,7 @@ function App() {
                     (accumulator, currentValue) => accumulator + currentValue,
                     0
                   )
-                ).toFixed(2)}
+                )}
               </TableCell>
               <TableCell></TableCell>
             </TableLine>
