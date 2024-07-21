@@ -8,7 +8,11 @@ import { useStore } from './store';
 const Header = styled.header`
   padding: 10px 0;
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  & div {
+    display: flex;
+    gap: 10px;
+  }
 `;
 
 const TableStyled = styled.table`
@@ -66,6 +70,7 @@ function App() {
   const addLine = useStore((state) => state.addLine);
   const removeLine = useStore((state) => state.removeLine);
   const changeDatum = useStore((state) => state.changeDatum);
+  const clearForm = useStore((state) => state.clearForm);
 
   const handlePriceChange = (position: number, value: string) => {
     const formattedValue = value.replace(/[^0-9.]/g, '');
@@ -115,12 +120,15 @@ function App() {
   return (
     <>
       <Header>
-        <div>Введите стоимость Вашей доставки в это поле:</div>
-        <input
-          type="number"
-          step="any"
-          onChange={(e) => handleDeliveryChange(e.target.value)}
-        />
+        <div>
+          <span>Введите стоимость Вашей доставки в это поле:</span>
+          <input
+            type="number"
+            step="any"
+            onChange={(e) => handleDeliveryChange(e.target.value)}
+          />
+        </div>
+        <button onClick={() => clearForm()}>Очистить форму</button>
       </Header>
       <main>
         <TableStyled>

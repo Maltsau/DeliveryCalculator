@@ -20,6 +20,7 @@ type IStore = {
     position: number,
     datum: string | number
   ) => void;
+  clearForm: () => void;
 };
 
 export const useStore = create<IStore>((set) => ({
@@ -56,5 +57,14 @@ export const useStore = create<IStore>((set) => ({
       lines: state.lines.map((line) =>
         line.position === position ? { ...line, [field]: datum } : line
       ),
+    })),
+  clearForm: () =>
+    set((state) => ({
+      delivery: 0,
+      lines: state.lines.map((line) => ({
+        ...line,
+        quantity: 0,
+        price: 0,
+      })),
     })),
 }));
