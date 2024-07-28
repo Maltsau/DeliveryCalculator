@@ -2,13 +2,18 @@ import styled from 'styled-components';
 
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
+import clearIcon from '/delete.png';
 
 import { useStore } from './store';
 
 const Header = styled.header`
   padding: 10px 0;
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
+  & div {
+    display: flex;
+    gap: 10px;
+  }
 `;
 
 const TableStyled = styled.table`
@@ -49,11 +54,12 @@ const TableCell = styled.td`
   padding: 10px;
 `;
 
-const InlineButton = styled.div<{ $background: string }>`
-  margin: 0px auto;
+const InlineButton = styled.div<{ $background: string; $isInline?: boolean }>`
+  margin: 0px ${(props) => (props.$isInline ? 'auto' : '0px')};
   background-image: url(${(props) => props.$background});
   background-repeat: no-repeat;
   background-position: center;
+  background-size: contain;
   width: 24px;
   height: 24px;
   cursor: pointer;
@@ -66,6 +72,7 @@ function App() {
   const addLine = useStore((state) => state.addLine);
   const removeLine = useStore((state) => state.removeLine);
   const changeDatum = useStore((state) => state.changeDatum);
+  const clearForm = useStore((state) => state.clearForm);
 
   const handlePriceChange = (position: number, value: string) => {
     const formattedValue = value.replace(/[^0-9.]/g, '');
@@ -115,12 +122,19 @@ function App() {
   return (
     <>
       <Header>
-        <div>Введите стоимость Вашей доставки в это поле:</div>
-        <input
-          type="number"
-          step="any"
-          onChange={(e) => handleDeliveryChange(e.target.value)}
-        />
+        <div>
+          <span>Введите стоимость Вашей доставки в это поле:</span>
+          <input
+            type="number"
+            step="any"
+            value={delivery}
+            onChange={(e) => handleDeliveryChange(e.target.value)}
+          />
+        </div>
+        <InlineButton
+          $background={clearIcon}
+          onClick={() => clearForm()}
+        ></InlineButton>
       </Header>
       <main>
         <TableStyled>
@@ -200,6 +214,7 @@ function App() {
                 <TableCell>
                   <InlineButton
                     $background={minusIcon}
+                    $isInline={true}
                     onClick={() => {
                       removeLine(line.position);
                     }}
@@ -211,6 +226,7 @@ function App() {
               <TableCell colSpan={10}>
                 <InlineButton
                   $background={plusIcon}
+                  $isInline={true}
                   onClick={() => {
                     addLine();
                   }}
