@@ -117,7 +117,9 @@ function App() {
     (line, i) => line.price + deliveryPerPosition[i] / line.quantity
   );
 
-  const newCosts = lines.map((line, i) => newPrices[i] * line.quantity);
+  const newCosts = lines.map((line, i) =>
+    !isNaN(newPrices[i] * line.quantity) ? newPrices[i] * line.quantity : 0
+  );
 
   return (
     <>
