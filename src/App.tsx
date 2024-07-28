@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
+import clearIcon from '/delete.png';
 
 import { useStore } from './store';
 
@@ -53,11 +54,12 @@ const TableCell = styled.td`
   padding: 10px;
 `;
 
-const InlineButton = styled.div<{ $background: string }>`
-  margin: 0px auto;
+const InlineButton = styled.div<{ $background: string; $isInline?: boolean }>`
+  margin: 0px ${(props) => (props.$isInline ? 'auto' : '0px')};
   background-image: url(${(props) => props.$background});
   background-repeat: no-repeat;
   background-position: center;
+  background-size: contain;
   width: 24px;
   height: 24px;
   cursor: pointer;
@@ -125,10 +127,14 @@ function App() {
           <input
             type="number"
             step="any"
+            value={delivery}
             onChange={(e) => handleDeliveryChange(e.target.value)}
           />
         </div>
-        <button onClick={() => clearForm()}>Очистить форму</button>
+        <InlineButton
+          $background={clearIcon}
+          onClick={() => clearForm()}
+        ></InlineButton>
       </Header>
       <main>
         <TableStyled>
@@ -208,6 +214,7 @@ function App() {
                 <TableCell>
                   <InlineButton
                     $background={minusIcon}
+                    $isInline={true}
                     onClick={() => {
                       removeLine(line.position);
                     }}
@@ -219,6 +226,7 @@ function App() {
               <TableCell colSpan={10}>
                 <InlineButton
                   $background={plusIcon}
+                  $isInline={true}
                   onClick={() => {
                     addLine();
                   }}
