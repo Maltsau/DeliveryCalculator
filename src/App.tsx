@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
 import clearIcon from '/delete.png';
+import gitIcon from '/github.svg';
 
 import { useStore } from './store';
 
@@ -65,7 +66,24 @@ const InlineButton = styled.div<{ $background: string; $isInline?: boolean }>`
   cursor: pointer;
 `;
 
+const Footer = styled.footer`
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0px;
+`;
+
+const FooterLink = styled.div<{ $background: string }>`
+  background-image: url(${(props) => props.$background});
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+`;
+
 function App() {
+  const version = useStore((state) => state.version);
   const delivery = useStore((state) => state.delivery);
   const lines = useStore((state) => state.lines);
   const setDelivery = useStore((state) => state.setDelivery);
@@ -117,7 +135,9 @@ function App() {
     (line, i) => line.price + deliveryPerPosition[i] / line.quantity
   );
 
-  const newCosts = lines.map((line, i) => newPrices[i] * line.quantity);
+  const newCosts = lines.map((line, i) =>
+    !isNaN(newPrices[i] * line.quantity) ? newPrices[i] * line.quantity : 0
+  );
 
   return (
     <>
@@ -259,6 +279,12 @@ function App() {
           </tbody>
         </TableStyled>
       </main>
+      <Footer>
+        <span>{version}</span>
+        <a href="https://github.com/Maltsau" target="_blank">
+          <FooterLink $background={gitIcon} />
+        </a>
+      </Footer>
     </>
   );
 }
