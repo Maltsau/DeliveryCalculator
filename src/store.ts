@@ -25,7 +25,7 @@ type IStore = {
 };
 
 export const useStore = create<IStore>((set) => ({
-  version: 'V1.0',
+  version: 'V2.0',
   delivery: 0,
   lines: [
     { position: 1, description: '', quantity: 0, price: 0 },
