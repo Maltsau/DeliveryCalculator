@@ -3,35 +3,11 @@ import { useEffect } from 'react';
 
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
-import clearIcon from '/delete.png';
 import gitIcon from '/github.svg';
 
 import { useStore } from './store';
-
-const Header = styled.header`
-  padding: 10px 0;
-  display: flex;
-  justify-content: space-between;
-  & div {
-    display: flex;
-    gap: 10px;
-  }
-`;
-
-const StyledCheckbox = styled.div<{ $isAdvansedMode: boolean }>`
-  display: flex;
-  justify-content: ${(props) => (props.$isAdvansedMode ? 'start' : 'end')};
-  border: 2px solid ${(props) => (props.$isAdvansedMode ? 'red' : 'gray')};
-  border-radius: 12px;
-  background-color: ${(props) => (props.$isAdvansedMode ? 'red' : 'gray')};
-  width: 48px;
-`;
-
-const CheckboxPoint = styled.div`
-  background-color: white;
-  width: 24px;
-  border-radius: 12px;
-`;
+import Header from './components/Header';
+import { InlineButton } from './components/commonElements';
 
 const TableStyled = styled.table`
   min-width: 100%;
@@ -71,17 +47,6 @@ const TableCell = styled.td`
   padding: 10px;
 `;
 
-const InlineButton = styled.div<{ $background: string; $isInline?: boolean }>`
-  margin: 0px ${(props) => (props.$isInline ? 'auto' : '0px')};
-  background-image: url(${(props) => props.$background});
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-`;
-
 const Footer = styled.footer`
   display: flex;
   justify-content: space-between;
@@ -103,11 +68,9 @@ function App() {
   const delivery = useStore((state) => state.delivery);
   const lines = useStore((state) => state.lines);
   const isAdvansedMode = useStore((state) => state.isAdvansedMode);
-  const setDelivery = useStore((state) => state.setDelivery);
   const addLine = useStore((state) => state.addLine);
   const removeLine = useStore((state) => state.removeLine);
   const changeDatum = useStore((state) => state.changeDatum);
-  const clearForm = useStore((state) => state.clearForm);
   const setAdvansedMode = useStore((state) => state.setAdvansedMode);
 
   const handlePriceChange = (position: number, value: string) => {
@@ -119,17 +82,6 @@ function App() {
         : parseFloat(formattedValue);
 
     changeDatum('price', position, isNaN(finalValue) ? 0 : finalValue);
-  };
-
-  const handleDeliveryChange = (value: string) => {
-    const formattedValue = value.replace(/[^0-9.]/g, '');
-    const [integerPart, decimalPart] = formattedValue.split('.');
-    const finalValue =
-      decimalPart && decimalPart.length > 2
-        ? parseFloat(`${integerPart}.${decimalPart.slice(0, 2)}`)
-        : parseFloat(formattedValue);
-
-    setDelivery(isNaN(finalValue) ? 0 : finalValue);
   };
 
   const validateCalculated = (value: number) => {
@@ -164,37 +116,7 @@ function App() {
 
   return (
     <>
-      <Header>
-        <div>
-          <span>Введите стоимость Вашей доставки в это поле:</span>
-          <input
-            type="number"
-            step="any"
-            value={delivery}
-            onChange={(e) => handleDeliveryChange(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledCheckbox
-            $isAdvansedMode={isAdvansedMode}
-            onClick={() => {
-              localStorage.getItem('isAdvansedMode') === 'true'
-                ? localStorage.setItem('isAdvansedMode', 'false')
-                : localStorage.setItem('isAdvansedMode', 'true');
-              setAdvansedMode(!isAdvansedMode);
-            }}
-          >
-            <CheckboxPoint />
-          </StyledCheckbox>
-          <span>
-            {isAdvansedMode ? 'В обычный режим' : 'В продвинутый режим'}
-          </span>
-        </div>
-        <InlineButton
-          $background={clearIcon}
-          onClick={() => clearForm()}
-        ></InlineButton>
-      </Header>
+      <Header />
       <main>
         <TableStyled>
           <TableHead>
