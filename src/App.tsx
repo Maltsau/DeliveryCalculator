@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { useEffect } from 'react';
 
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
@@ -15,6 +16,21 @@ const Header = styled.header`
     display: flex;
     gap: 10px;
   }
+`;
+
+const StyledCheckbox = styled.div<{ $isAdvansedMode: boolean }>`
+  display: flex;
+  justify-content: ${(props) => (props.$isAdvansedMode ? 'start' : 'end')};
+  border: 2px solid ${(props) => (props.$isAdvansedMode ? 'red' : 'gray')};
+  border-radius: 12px;
+  background-color: ${(props) => (props.$isAdvansedMode ? 'red' : 'gray')};
+  width: 48px;
+`;
+
+const CheckboxPoint = styled.div`
+  background-color: white;
+  width: 24px;
+  border-radius: 12px;
 `;
 
 const TableStyled = styled.table`
@@ -86,11 +102,13 @@ function App() {
   const version = useStore((state) => state.version);
   const delivery = useStore((state) => state.delivery);
   const lines = useStore((state) => state.lines);
+  const isAdvansedMode = useStore((state) => state.isAdvansedMode);
   const setDelivery = useStore((state) => state.setDelivery);
   const addLine = useStore((state) => state.addLine);
   const removeLine = useStore((state) => state.removeLine);
   const changeDatum = useStore((state) => state.changeDatum);
   const clearForm = useStore((state) => state.clearForm);
+  const setAdvansedMode = useStore((state) => state.setAdvansedMode);
 
   const handlePriceChange = (position: number, value: string) => {
     const formattedValue = value.replace(/[^0-9.]/g, '');
@@ -139,6 +157,11 @@ function App() {
     !isNaN(newPrices[i] * line.quantity) ? newPrices[i] * line.quantity : 0
   );
 
+  useEffect(() => {
+    if (localStorage.getItem('isAdvansedMode') === 'true')
+      setAdvansedMode(true);
+  }, [isAdvansedMode, setAdvansedMode]);
+
   return (
     <>
       <Header>
@@ -150,6 +173,22 @@ function App() {
             value={delivery}
             onChange={(e) => handleDeliveryChange(e.target.value)}
           />
+        </div>
+        <div>
+          <StyledCheckbox
+            $isAdvansedMode={isAdvansedMode}
+            onClick={() => {
+              localStorage.getItem('isAdvansedMode') === 'true'
+                ? localStorage.setItem('isAdvansedMode', 'false')
+                : localStorage.setItem('isAdvansedMode', 'true');
+              setAdvansedMode(!isAdvansedMode);
+            }}
+          >
+            <CheckboxPoint />
+          </StyledCheckbox>
+          <span>
+            {isAdvansedMode ? 'В обычный режим' : 'В продвинутый режим'}
+          </span>
         </div>
         <InlineButton
           $background={clearIcon}

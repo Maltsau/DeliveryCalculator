@@ -13,6 +13,7 @@ type IStore = {
   version: string;
   delivery: number;
   lines: ILine[];
+  isAdvansedMode: boolean;
   setDelivery: (delivery: number) => void;
   addLine: () => void;
   removeLine: (position: number) => void;
@@ -22,6 +23,7 @@ type IStore = {
     datum: string | number
   ) => void;
   clearForm: () => void;
+  setAdvansedMode: (value: boolean) => void;
 };
 
 export const useStore = create<IStore>((set) => ({
@@ -32,6 +34,7 @@ export const useStore = create<IStore>((set) => ({
     { position: 2, description: '', quantity: 0, price: 0 },
     { position: 3, description: '', quantity: 0, price: 0 },
   ],
+  isAdvansedMode: false,
   setDelivery: (delivery) => set(() => ({ delivery })),
   addLine: () =>
     set((state) => ({
@@ -69,4 +72,5 @@ export const useStore = create<IStore>((set) => ({
         price: 0,
       })),
     })),
+  setAdvansedMode: (value) => set(() => ({ isAdvansedMode: value })),
 }));
