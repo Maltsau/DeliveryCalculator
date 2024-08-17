@@ -10,6 +10,7 @@ interface ILine {
 type DataFieldType = 'description' | 'price' | 'quantity';
 
 type IStore = {
+  version: string;
   delivery: number;
   lines: ILine[];
   setDelivery: (delivery: number) => void;
@@ -24,6 +25,7 @@ type IStore = {
 };
 
 export const useStore = create<IStore>((set) => ({
+  version: 'V1.0',
   delivery: 0,
   lines: [
     { position: 1, description: '', quantity: 0, price: 0 },
