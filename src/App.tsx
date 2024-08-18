@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
-import gitIcon from '/github.svg';
 
 import { useStore } from './store';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import { InlineButton } from './components/commonElements';
 
 const TableStyled = styled.table`
@@ -47,24 +47,7 @@ const TableCell = styled.td`
   padding: 10px;
 `;
 
-const Footer = styled.footer`
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 0px;
-`;
-
-const FooterLink = styled.div<{ $background: string }>`
-  background-image: url(${(props) => props.$background});
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-`;
-
 function App() {
-  const version = useStore((state) => state.version);
   const delivery = useStore((state) => state.delivery);
   const lines = useStore((state) => state.lines);
   const isAdvansedMode = useStore((state) => state.isAdvansedMode);
@@ -240,12 +223,7 @@ function App() {
           </tbody>
         </TableStyled>
       </main>
-      <Footer>
-        <span>{version}</span>
-        <a href="https://github.com/Maltsau" target="_blank">
-          <FooterLink $background={gitIcon} />
-        </a>
-      </Footer>
+      <Footer />
     </>
   );
 }
