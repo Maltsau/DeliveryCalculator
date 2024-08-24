@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
+import muteIcon from '/mute.png';
 
 import { useStore } from './store';
 import Header from './components/Header';
@@ -24,7 +25,7 @@ const TableHead = styled.thead`
 `;
 
 const TableLine = styled.tr`
-  & :nth-child(1) {
+  & td:nth-child(1) {
     min-width: 70px;
   }
   & td:nth-child(7) {
@@ -45,6 +46,11 @@ const TableCell = styled.td`
   border: 1px solid black;
   margin: 0;
   padding: 10px;
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 function App() {
@@ -176,13 +182,22 @@ function App() {
                 </TableCell>
                 <TableCell>{validateCalculated(newCosts[i])}</TableCell>
                 <TableCell>
-                  <InlineButton
-                    $background={minusIcon}
-                    $isInline={true}
-                    onClick={() => {
-                      removeLine(line.position);
-                    }}
-                  ></InlineButton>
+                  <div>
+                    {isAdvansedMode && (
+                      <InlineButton
+                        $background={muteIcon}
+                        $isInline={true}
+                        onClick={() => {}}
+                      ></InlineButton>
+                    )}
+                    <InlineButton
+                      $background={minusIcon}
+                      $isInline={true}
+                      onClick={() => {
+                        removeLine(line.position);
+                      }}
+                    ></InlineButton>
+                  </div>
                 </TableCell>
               </TableLine>
             ))}

@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 const InlineButton = styled.div<{ $background: string; $isInline?: boolean }>`
+  box-sizing: border-box;
   margin: 0px ${(props) => (props.$isInline ? 'auto' : '0px')};
   background-image: url(${(props) => props.$background});
   background-repeat: no-repeat;
