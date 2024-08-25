@@ -177,9 +177,13 @@ function App() {
                       type="number"
                       step="any"
                       value={line.quantity}
-                      onChange={(e) =>
-                        handlePriceChange(line.position, e.target.value)
-                      }
+                      onChange={(e) => {
+                        changeDatum(
+                          'quantity',
+                          line.position,
+                          Number(e.target.value)
+                        );
+                      }}
                     />
                   )}
                 </TableCell>
