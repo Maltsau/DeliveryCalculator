@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import plusIcon from '/plus.svg';
 import minusIcon from '/minus.svg';
 import muteIcon from '/mute.png';
+import unmuteIcon from '/unmute.svg';
 
 import { useStore } from './store';
 import Header from './components/Header';
@@ -42,10 +43,12 @@ const TableHeadCell = styled.th`
   padding: 10px;
 `;
 
-const TableCell = styled.td`
+const TableCell = styled.td<{ $isMuted: boolean }>`
   border: 1px solid black;
   margin: 0;
   padding: 10px;
+  text-decoration: ${(props) => (props.$isMuted ? 'line-through' : 'none')};
+  color: ${(props) => (props.$isMuted ? 'gray !important' : 'black')};
   & > div {
     display: flex;
     align-items: center;
@@ -125,48 +128,76 @@ function App() {
           <tbody>
             {lines.map((line, i) => (
               <TableLine key={line.position + 'key'}>
-                <TableCell>{line.position}</TableCell>
-                <TableCell>
-                  <input
-                    value={line.description}
-                    onChange={(e) => {
-                      changeDatum('description', line.position, e.target.value);
-                    }}
-                  />
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
+                  {line.position}
                 </TableCell>
-                <TableCell>
-                  <input
-                    type="number"
-                    step="any"
-                    value={line.price}
-                    onChange={(e) =>
-                      handlePriceChange(line.position, e.target.value)
-                    }
-                  />
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
+                  {line.isMuted && isAdvansedMode ? (
+                    line.description
+                  ) : (
+                    <input
+                      value={line.description}
+                      onChange={(e) => {
+                        changeDatum(
+                          'description',
+                          line.position,
+                          e.target.value
+                        );
+                      }}
+                    />
+                  )}
                 </TableCell>
-                <TableCell>
-                  <input
-                    type="number"
-                    step="any"
-                    value={line.quantity}
-                    onChange={(e) => {
-                      changeDatum(
-                        'quantity',
-                        line.position,
-                        Number(e.target.value)
-                      );
-                    }}
-                  />
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
+                  {line.isMuted && isAdvansedMode ? (
+                    line.price
+                  ) : (
+                    <input
+                      type="number"
+                      step="any"
+                      value={line.price}
+                      onChange={(e) =>
+                        handlePriceChange(line.position, e.target.value)
+                      }
+                    />
+                  )}
                 </TableCell>
-                <TableCell>
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
+                  {line.isMuted && isAdvansedMode ? (
+                    line.quantity
+                  ) : (
+                    <input
+                      type="number"
+                      step="any"
+                      value={line.quantity}
+                      onChange={(e) =>
+                        handlePriceChange(line.position, e.target.value)
+                      }
+                    />
+                  )}
+                </TableCell>
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
                   <span>{validateCalculated(line.price * line.quantity)}</span>
                 </TableCell>
-                <TableCell>
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
                   <span>
                     {'+' + validateCalculated(deliveryPerPosition[i])}
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
                   <span>
                     {line.price}
                     <sup>
@@ -177,19 +208,32 @@ function App() {
                     </sup>
                   </span>
                 </TableCell>
-                <TableCell>
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
                   <span>{validateCalculated(newPrices[i])}</span>
                 </TableCell>
-                <TableCell>{validateCalculated(newCosts[i])}</TableCell>
-                <TableCell>
+                <TableCell
+                  $isMuted={line.isMuted && isAdvansedMode ? true : false}
+                >
+                  {validateCalculated(newCosts[i])}
+                </TableCell>
+                <TableCell $isMuted={false}>
                   <div>
-                    {isAdvansedMode && (
-                      <InlineButton
-                        $background={muteIcon}
-                        $isInline={true}
-                        onClick={() => {}}
-                      ></InlineButton>
-                    )}
+                    {isAdvansedMode &&
+                      (line.isMuted ? (
+                        <InlineButton
+                          $background={unmuteIcon}
+                          $isInline={true}
+                          onClick={() => {}}
+                        ></InlineButton>
+                      ) : (
+                        <InlineButton
+                          $background={muteIcon}
+                          $isInline={true}
+                          onClick={() => {}}
+                        ></InlineButton>
+                      ))}
                     <InlineButton
                       $background={minusIcon}
                       $isInline={true}
@@ -202,7 +246,7 @@ function App() {
               </TableLine>
             ))}
             <TableLine>
-              <TableCell colSpan={10}>
+              <TableCell colSpan={10} $isMuted={false}>
                 <InlineButton
                   $background={plusIcon}
                   $isInline={true}
@@ -213,9 +257,13 @@ function App() {
               </TableCell>
             </TableLine>
             <TableLine>
-              <TableCell colSpan={4}>ИТОГО:</TableCell>
-              <TableCell>{validateCalculated(totalNettoPrice)}</TableCell>
-              <TableCell>
+              <TableCell colSpan={4} $isMuted={false}>
+                ИТОГО:
+              </TableCell>
+              <TableCell $isMuted={false}>
+                {validateCalculated(totalNettoPrice)}
+              </TableCell>
+              <TableCell $isMuted={false}>
                 {validateCalculated(
                   deliveryPerPosition.reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
@@ -223,9 +271,9 @@ function App() {
                   )
                 )}
               </TableCell>
-              <TableCell></TableCell>
-              <TableCell></TableCell>
-              <TableCell>
+              <TableCell $isMuted={false}></TableCell>
+              <TableCell $isMuted={false}></TableCell>
+              <TableCell $isMuted={false}>
                 {validateCalculated(
                   newCosts.reduce(
                     (accumulator, currentValue) => accumulator + currentValue,
@@ -233,7 +281,7 @@ function App() {
                   )
                 )}
               </TableCell>
-              <TableCell></TableCell>
+              <TableCell $isMuted={false}></TableCell>
             </TableLine>
           </tbody>
         </TableStyled>

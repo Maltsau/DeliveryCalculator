@@ -5,6 +5,7 @@ interface ILine {
   description: string;
   quantity: number;
   price: number;
+  isMuted: boolean;
 }
 
 type DataFieldType = 'description' | 'price' | 'quantity';
@@ -30,9 +31,9 @@ export const useStore = create<IStore>((set) => ({
   version: 'V2.0',
   delivery: 0,
   lines: [
-    { position: 1, description: '', quantity: 0, price: 0 },
-    { position: 2, description: '', quantity: 0, price: 0 },
-    { position: 3, description: '', quantity: 0, price: 0 },
+    { position: 1, description: '', quantity: 0, price: 0, isMuted: false },
+    { position: 2, description: '', quantity: 0, price: 0, isMuted: false },
+    { position: 3, description: '', quantity: 0, price: 0, isMuted: true },
   ],
   isAdvansedMode: false,
   setDelivery: (delivery) => set(() => ({ delivery })),
@@ -45,6 +46,7 @@ export const useStore = create<IStore>((set) => ({
           description: '',
           price: 0,
           quantity: 0,
+          isMuted: false,
         },
       ],
     })),
