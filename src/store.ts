@@ -25,6 +25,7 @@ type IStore = {
   ) => void;
   clearForm: () => void;
   setAdvansedMode: (value: boolean) => void;
+  toggleMuteLine: (position: number) => void;
 };
 
 export const useStore = create<IStore>((set) => ({
@@ -75,4 +76,10 @@ export const useStore = create<IStore>((set) => ({
       })),
     })),
   setAdvansedMode: (value) => set(() => ({ isAdvansedMode: value })),
+  toggleMuteLine: (position) =>
+    set((state) => ({
+      lines: state.lines.map((line) =>
+        line.position === position ? { ...line, isMuted: !line.isMuted } : line
+      ),
+    })),
 }));

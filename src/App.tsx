@@ -64,6 +64,7 @@ function App() {
   const removeLine = useStore((state) => state.removeLine);
   const changeDatum = useStore((state) => state.changeDatum);
   const setAdvansedMode = useStore((state) => state.setAdvansedMode);
+  const toggleMuteLine = useStore((state) => state.toggleMuteLine);
 
   const handlePriceChange = (position: number, value: string) => {
     const formattedValue = value.replace(/[^0-9.]/g, '');
@@ -229,13 +230,17 @@ function App() {
                         <InlineButton
                           $background={unmuteIcon}
                           $isInline={true}
-                          onClick={() => {}}
+                          onClick={() => {
+                            toggleMuteLine(line.position);
+                          }}
                         ></InlineButton>
                       ) : (
                         <InlineButton
                           $background={muteIcon}
                           $isInline={true}
-                          onClick={() => {}}
+                          onClick={() => {
+                            toggleMuteLine(line.position);
+                          }}
                         ></InlineButton>
                       ))}
                     <InlineButton
